@@ -12,7 +12,7 @@ path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 
 # read config
 config = configparser.ConfigParser()
-config.read(os.path.join(path, "config"))
+config.read(os.path.join(path, "configuration.txt"))
 
 # your search query and tweet language (empty = all languages)
 search_term = config.get("settings", "search_query")
