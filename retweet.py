@@ -42,13 +42,15 @@ except IOError:
     print("No savepoint found. Trying to get as many results as possible.")
 
 timelineIterator = tweepy.Cursor(api.search, q=search_term, since_id=savepoint, lang=tweetLanguage,
-                                 wait_on_rate_limit=True, wait_on_rate_limit_notify=True).items()
+                                 wait_on_rate_limit=True, wait_on_rate_limit_notify=True).items(10)
 
 # put everything into a list to be able to sort/filter
 timeline = []
+total = 0
 for status in timelineIterator:
-    print('.', end="")
     timeline.append(status)
+    total += 1
+print("\n*** Total tweets found: " + str(total))
 
 try:
     last_tweet_id = timeline[0].id
@@ -72,7 +74,7 @@ for status in timeline:
                "name": status.author.screen_name.encode('utf-8'),
                "message": status.text.encode('utf-8')})
 
-        api.retweet(status.id)
+        # api.retweet(status.id)
         tw_counter += 1
     except tweepy.error.TweepError as e:
         # just in case tweet got deleted in the meantime or already retweeted
