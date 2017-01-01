@@ -66,17 +66,14 @@ while True:
     except IndexError:
         last_tweet_id = savepoint
 
-    # filter @replies/blacklisted words & users out and reverse timeline
     timeline = filter(lambda status: status.text[0] != "@", timeline)
     timeline = filter(lambda status: not any(word in status.text.split() for word in wordBlacklist), timeline)
     timeline = filter(lambda status: status.author.screen_name not in userBlacklist, timeline)
-    # timeline.reverse()
-
-    err_counter = 0
 
     print("Attempting to retweet the most-retweeted tweet...\n")
     success = False
 
+    err_counter = 0
     while not success:
         for status in timeline:
             try:
