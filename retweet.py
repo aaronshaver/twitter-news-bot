@@ -8,9 +8,8 @@ import os
 
 import tweepy
 
-path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-
 # read config
+path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 config = configparser.ConfigParser()
 config.read(os.path.join(path, "configuration.txt"))
 
@@ -41,16 +40,26 @@ except IOError:
     savepoint = ""
     print("No savepoint found. Trying to get as many results as possible.")
 
+print("Creating timeline iterator...")
 timelineIterator = tweepy.Cursor(api.search, q=search_term, since_id=savepoint, lang=tweetLanguage,
-                                 wait_on_rate_limit=True, wait_on_rate_limit_notify=True).items(10)
+                                 wait_on_rate_limit=True, wait_on_rate_limit_notify=True).items(1500)
 
-# put everything into a list to be able to sort/filter
+print("Put items from tweety.Cursor object into a list for easier sorting, filtering...")
 timeline = []
 total = 0
 for status in timelineIterator:
     timeline.append(status)
     total += 1
 print("\n*** Total tweets found: " + str(total))
+
+# print()
+# pprint(vars(timeline[0]))
+# print()
+
+timeline.sort(key=lambda x: x.retweet_count, reverse=True)
+
+for status in timeline:
+    print("retweet_count: " + str(status.retweet_count))
 
 try:
     last_tweet_id = timeline[0].id
@@ -66,20 +75,21 @@ timeline = filter(lambda status: status.author.screen_name not in userBlacklist,
 tw_counter = 0
 err_counter = 0
 
-# iterate the timeline and retweet
+print("Retweeting the most-retweeted tweet...")
+success = False
 for status in timeline:
     try:
-        print("(%(date)s) %(name)s: %(message)s\n" % \
+        print("d: (%(date)s)\n name: %(name)s\n message: %(message)s\n count: %(retweet_count)s\n" %
               {"date": status.created_at,
                "name": status.author.screen_name.encode('utf-8'),
-               "message": status.text.encode('utf-8')})
-
-        # api.retweet(status.id)
+               "message": status.text.encode('utf-8'),
+               "retweet_count": status.retweet_count})
+        if config.get("settings", "retweeting_enabled") == "True":
+            api.retweet(status.id)
+        break
         tw_counter += 1
     except tweepy.error.TweepError as e:
-        # just in case tweet got deleted in the meantime or already retweeted
         err_counter += 1
-        # print e
         continue
 
 print("Finished. %d Tweets retweeted, %d errors occured." % (tw_counter, err_counter))
