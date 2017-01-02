@@ -8,6 +8,7 @@ tweet_language:
 retweeting_enabled: False
 max_tweets_to_fetch: 150
 time_between_retweets: 600
+max_age_in_minutes: 60
 
 # Create your app on http://apps.twitter.com
 [twitter]

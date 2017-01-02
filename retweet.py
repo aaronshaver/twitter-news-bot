@@ -52,7 +52,7 @@ while True:
     timeline = []
     for status in timelineIterator:
         timeline.append(status)
-    print("Total tweets found: " + str(len(timeline)) + "\n")
+    print("\nTotal tweets found: " + str(len(timeline)) + "\n")
 
     timeline.sort(key=lambda x: x.retweet_count, reverse=True)
     try:
@@ -64,17 +64,10 @@ while True:
     timeline = filter(lambda status: status.text[0] != "@", timeline)
     timeline = filter(lambda status: not any(word in status.text.split() for word in wordBlacklist), timeline)
     timeline = filter(lambda status: status.author.screen_name not in userBlacklist, timeline)
-    timeline = filter(lambda status: status.retweeted_status.created_at > (datetime.utcnow() - timedelta(hours=1)),
+    minutes_age = int(config.get("settings", "max_age_in_minutes"))
+    timeline = filter(lambda status:
+                      status.retweeted_status.created_at > (datetime.utcnow() - timedelta(minutes=minutes_age)),
                       timeline)
-
-    # for status in timeline:
-    #     print("status.retweet_count: " + str(status.retweet_count))
-    #     print(datetime.utcnow())
-    #     print("status.created_at: " + str(status.created_at))
-    #     print("status.retweeted_status.created_at: " + str(status.retweeted_status.created_at))
-    #     print(status.retweeted_status.created_at > (datetime.utcnow() - timedelta(hours=1)))
-    #     print("status.text: " + status.text)
-    #     print()
 
     print("Attempting to retweet the most-retweeted tweet...\n")
     success = False
