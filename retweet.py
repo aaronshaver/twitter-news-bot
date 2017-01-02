@@ -6,6 +6,7 @@ import hashlib
 import inspect
 import os
 import time
+from datetime import datetime, timedelta
 
 import tweepy
 
@@ -49,15 +50,9 @@ while True:
 
     print("Put items from tweety.Cursor object into a list for easier sorting, filtering...\n")
     timeline = []
-    total = 0
     for status in timelineIterator:
         timeline.append(status)
-        total += 1
-    print("Total tweets found: " + str(total) + "\n")
-
-    # print()
-    # pprint(vars(timeline[0]))
-    # print()
+    print("Total tweets found: " + str(len(timeline)) + "\n")
 
     timeline.sort(key=lambda x: x.retweet_count, reverse=True)
 
@@ -66,13 +61,24 @@ while True:
     except IndexError:
         last_tweet_id = savepoint
 
+    timeline = [tweet for tweet in timeline if hasattr(tweet, "retweeted_status")]
     timeline = filter(lambda status: status.text[0] != "@", timeline)
     timeline = filter(lambda status: not any(word in status.text.split() for word in wordBlacklist), timeline)
     timeline = filter(lambda status: status.author.screen_name not in userBlacklist, timeline)
+    timeline = filter(lambda status: status.retweeted_status.created_at > (datetime.utcnow() - timedelta(hours=1)),
+                      timeline)
+
+    # for status in timeline:
+    #     print("status.retweet_count: " + str(status.retweet_count))
+    #     print(datetime.utcnow())
+    #     print("status.created_at: " + str(status.created_at))
+    #     print("status.retweeted_status.created_at: " + str(status.retweeted_status.created_at))
+    #     print(status.retweeted_status.created_at > (datetime.utcnow() - timedelta(hours=1)))
+    #     print("status.text: " + status.text)
+    #     print()
 
     print("Attempting to retweet the most-retweeted tweet...\n")
     success = False
-
     err_counter = 0
     while not success:
         for status in timeline:

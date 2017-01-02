@@ -1,6 +1,6 @@
 # twitter-news-bot
 
-Python-based bot that periodically and automatically retweets the most retweet tweets based on a keyword
+Python-based bot that periodically and automatically retweets the most retweeted tweets based on a search term
 
 Code heavily inspired by : https://github.com/basti2342/retweet-bot
 
