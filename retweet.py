@@ -55,7 +55,6 @@ while True:
     print("Total tweets found: " + str(len(timeline)) + "\n")
 
     timeline.sort(key=lambda x: x.retweet_count, reverse=True)
-
     try:
         last_tweet_id = timeline[0].id
     except IndexError:
@@ -87,6 +86,7 @@ while True:
                     api.retweet(status.id)
                     print("Retweeting " + str(status.id) + " succeeded\n")
                     success = True
+                    last_tweet_id = status.id
                     break
             except tweepy.error.TweepError as e:
                 print("Error: " + e.reason + "\n")
