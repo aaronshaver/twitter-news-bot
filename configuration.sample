@@ -1,5 +1,5 @@
-# This is a sample configuration
-# RENAME THIS FILE TO configuration.txt to use it with the Python file
+# This is a sample configuration file
+# RENAME THIS FILE to configuration.txt to use it with the Python script
 
 [settings]
 search_query: yourSearchTerm
