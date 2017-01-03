@@ -5,6 +5,7 @@ import configparser
 import hashlib
 import inspect
 import os
+import sys
 import time
 from datetime import datetime, timedelta
 
@@ -68,6 +69,10 @@ class Bot:
             except IndexError:
                 last_tweet_id = self.savepoint
                 print("\nRe-using old, savepoint tweet id: " + str(last_tweet_id))
+
+            if len(timeline) < 1:
+                print("Timeline had zero tweets; something probably went wrong, or your search truly had no results")
+                sys.exit()
 
             timeline = [tweet for tweet in timeline if hasattr(tweet, "retweeted_status")]
             timeline = filter(lambda tweet: tweet.text[0] != "@", timeline)
