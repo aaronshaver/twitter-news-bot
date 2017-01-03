@@ -40,6 +40,7 @@ class Bot:
         self.tweet_language = self.config.get("settings", "tweet_language")
         self.last_id_file = self.build_save_point()
         self.retrieve_save_point(self, self.last_id_file)
+
         auth = tweepy.OAuthHandler(self.config.get("twitter", "consumer_key"), self.config.
                                    get("twitter", "consumer_secret"))
         auth.set_access_token(self.config.get("twitter", "access_token"), self.config.
