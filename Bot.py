@@ -4,6 +4,7 @@
 import configparser
 import hashlib
 import inspect
+import logging
 import os
 import sys
 import time
@@ -16,10 +17,8 @@ class Bot:
     userBlacklist = []
     wordBlacklist = []
 
-    @staticmethod
-    def write_to_log(text):
-        print(str(datetime.utcnow()))
-        print(str(text) + "\n")
+    date_time_name = datetime.utcnow().strftime("%Y%m%d%H%M%S")
+    logging.basicConfig(filename=date_time_name + '.log', level=logging.INFO)
 
     @staticmethod
     def retrieve_save_point(self, last_id_file):
@@ -27,14 +26,8 @@ class Bot:
             with open(last_id_file, "r") as saved_file:
                 self.savepoint = saved_file.read()
         except IOError:
-            self.write_to_log("No savepoint found. Trying to get as many results as possible.")
+            logging.info('No savepoint found. Trying to get as many results (tweets) as possible.')
             self.savepoint = ""
-
-    @staticmethod
-    def build_log_file():
-        log_filename = "log.txt"
-        current_directory = os.path.dirname(os.path.abspath(__file__))
-        return os.path.join(current_directory, log_filename)
 
     def build_save_point(self):
         hashedsearch_term = hashlib.md5(self.search_term.encode('utf-8')).hexdigest()
@@ -44,11 +37,10 @@ class Bot:
         return last_id_file
 
     def __init__(self):
-        self.log_filename = self.build_log_file()
-
         path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
         self.config = configparser.ConfigParser()
         self.config.read(os.path.join(path, "configuration.txt"))
+        self.sleep_time = int(self.config.get("settings", "time_between_retweets"))
         self.search_term = self.config.get("settings", "search_query")
         self.tweet_language = self.config.get("settings", "tweet_language")
         self.last_id_file = self.build_save_point()
@@ -61,32 +53,32 @@ class Bot:
         self.api = tweepy.API(auth)
 
     def execute(self):
+        print("The Twitter retweet bot is running. Please see the dated .log file for output and debugging.")
         while True:
-            self.write_to_log("Creating timeline iterator...")
+            logging.debug("Creating timeline iterator")
             timeline_iterator = tweepy.Cursor(self.api.search, q=self.search_term, since_id=self.savepoint,
                                               lang=self.tweet_language, wait_on_rate_limit=True,
                                               wait_on_rate_limit_notify=True). \
                 items(int(self.config.get("settings", "max_tweets_to_fetch")))
 
-            self.write_to_log("Puting items from tweety.Cursor object into a list for easier sorting, filtering...")
+            logging.debug("Puting items from tweety.Cursor object into a list for easier sorting, filtering...")
             timeline = []
             for status in timeline_iterator:
                 timeline.append(status)
 
-            self.write_to_log("\nTotal tweets found: " + str(len(timeline)))
+            logging.info("Total tweets found: " + str(len(timeline)))
 
             timeline.sort(key=lambda x: x.retweet_count, reverse=True)  # put most-retweeted tweets at head of list
 
             try:
                 last_tweet_id = timeline[0].id
-                self.write_to_log("\nNEW last tweet id: " + str(last_tweet_id))
+                logging.debug("New (non-savepoint) last tweet id: " + str(last_tweet_id))
             except IndexError:
                 last_tweet_id = self.savepoint
-                self.write_to_log("\nRe-using old, savepoint tweet id: " + str(last_tweet_id))
+                logging.debug("Re-using old, savepoint tweet id: " + str(last_tweet_id))
 
             if len(timeline) < 1:
-                self.write_to_log("Timeline had zero tweets; something probably went wrong, or search had no results")
-                self.write_to_log("Exiting program so you can fix your configuration")
+                logging.error("Exiting program. Zero tweets. Something went wrong (OAuth or search had no results)")
                 sys.exit()
 
             timeline = [tweet for tweet in timeline if hasattr(tweet, "retweeted_status")]
@@ -98,7 +90,7 @@ class Bot:
             timeline = filter(lambda tweet: tweet.retweeted_status.created_at >
                                             (datetime.utcnow() - timedelta(minutes=minutes_age)), timeline)
 
-            self.write_to_log("Attempting to retweet the most-retweeted tweet...\n")
+            logging.info("Attempting to retweet the most-retweeted tweet")
             success = False
             err_counter = 0
             while not success:
@@ -106,25 +98,27 @@ class Bot:
                     try:
                         if self.config.get("settings", "retweeting_enabled") == "True":
                             self.api.retweet(status.id)
-                            self.write_to_log("Retweeting " + str(status.id) + " succeeded\n")
+                            logging.info("Retweeting tweet with id " + str(status.id) + " succeeded")
                             success = True
                             last_tweet_id = status.id
                             break
+                        else:
+                            logging.warning("retweeting_enabled is not True, so we do nothing instead of retweet")
+                            success = True
+                            break
                     except tweepy.error.TweepError as e:
-                        self.write_to_log("Error: " + e.reason + "\n")
+                        logging.info("Tweepy error: " + e.reason)
                         err_counter += 1
                         continue
 
-            self.write_to_log("FINISHED. %d errors occured" % err_counter)
+            logging.info("FINISHED with this batch of tweets. %d errors occurred." % err_counter)
 
             with open(self.last_id_file, "w") as file:
                 file.write(str(last_tweet_id))
 
-            sleep_time = int(self.config.get("settings", "time_between_retweets"))
-            self.write_to_log("\nSleeping for %d seconds between retweets..." % sleep_time)
-            self.write_to_log(
-                "\n-------------------------------------------------------------------------------------------------\n")
-            time.sleep(sleep_time)
+            logging.info("Sleeping for %d seconds between retweets" % self.sleep_time)
+            logging.info("------------------------------------------------------------------------------")
+            time.sleep(self.sleep_time)
 
 
 bot = Bot()

@@ -4,7 +4,7 @@
 [settings]
 search_query: yourSearchTerm
 # Leave field below empty to search with all languages
-tweet_language:
+tweet_language: en
 retweeting_enabled: False
 max_tweets_to_fetch: 100
 time_between_retweets: 300
