@@ -10,5 +10,6 @@ The files "Bot.py" and "configuration.sample" are licensed under the MPL.
 1. Install Python 3.x
 2. pip install tweepy
 3. Edit the configuration.sample file and rename it to configuration.txt
-4. Tip: if running on, e.g. an EC2 instance, make sure networking is sufficient for the OAuth call to be made, and then
-run the script with 'sudo nohup python Bot.py' to keep it running, and 'sudo ps aux' to see the running process
+4. Tip: if running on, e.g. an EC2 instance, make sure networking/security groups are sufficiently open for the OAuth
+call to be made, and then run the script with 'sudo nohup python Bot.py &' to keep it running even when you close your
+SSH client. You can then 'sudo ps aux' to see the running process, and 'sudo kill <pid>' to kill it.
