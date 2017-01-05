@@ -17,17 +17,17 @@ class Bot:
     userBlacklist = []
     wordBlacklist = []
 
-    date_time_name = datetime.utcnow().strftime("%Y%m%d%H%M%S")
+    date_time_name = datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S")
     logging.basicConfig(filename=date_time_name + '.log', level=logging.INFO)
 
     @staticmethod
-    def retrieve_save_point(self, last_id_file):
+    def retrieve_save_point(last_id_file):
         try:
             with open(last_id_file, "r") as saved_file:
-                self.savepoint = saved_file.read()
+                return saved_file.read()
         except IOError:
             logging.info('No savepoint found. Trying to get as many results (tweets) as possible.')
-            self.savepoint = ""
+            return ""
 
     def build_save_point(self):
         hashedsearch_term = hashlib.md5(self.search_term.encode('utf-8')).hexdigest()
@@ -43,8 +43,10 @@ class Bot:
         self.sleep_time = int(self.config.get("settings", "time_between_retweets"))
         self.search_term = self.config.get("settings", "search_query")
         self.tweet_language = self.config.get("settings", "tweet_language")
+        self.max_age_in_minutes = int(self.config.get("settings", "max_age_in_minutes"))
+
         self.last_id_file = self.build_save_point()
-        self.retrieve_save_point(self, self.last_id_file)
+        self.savepoint = self.retrieve_save_point(self.last_id_file)
 
         auth = tweepy.OAuthHandler(self.config.get("twitter", "consumer_key"), self.config.
                                    get("twitter", "consumer_secret"))
@@ -53,52 +55,43 @@ class Bot:
         self.api = tweepy.API(auth)
 
     def execute(self):
-        print("The Twitter retweet bot is running. Please see the dated .log file for output and debugging.")
+        print("The Twitter retweet bot is now running. Please see the dated .log file for output.")
         while True:
-            logging.debug("Creating timeline iterator")
             timeline_iterator = tweepy.Cursor(self.api.search, q=self.search_term, since_id=self.savepoint,
                                               lang=self.tweet_language, wait_on_rate_limit=True,
                                               wait_on_rate_limit_notify=True). \
                 items(int(self.config.get("settings", "max_tweets_to_fetch")))
 
-            logging.debug("Puting items from tweety.Cursor object into a list for easier sorting, filtering...")
             timeline = []
             for status in timeline_iterator:
                 timeline.append(status)
-
-            logging.info("Total tweets found: " + str(len(timeline)))
-
-            timeline.sort(key=lambda x: x.retweet_count, reverse=True)  # put most-retweeted tweets at head of list
-
-            try:
-                last_tweet_id = timeline[0].id
-                logging.debug("New (non-savepoint) last tweet id: " + str(last_tweet_id))
-            except IndexError:
-                last_tweet_id = self.savepoint
-                logging.debug("Re-using old, savepoint tweet id: " + str(last_tweet_id))
-
             if len(timeline) < 1:
                 logging.error("Exiting program. Zero tweets. Something went wrong (OAuth or search had no results)")
                 sys.exit()
+            logging.info("Total tweets found: " + str(len(timeline)))
+
+            timeline.sort(key=lambda x: x.retweet_count, reverse=True)  # put most-retweeted tweets first
+
+            try:
+                last_tweet_id = timeline[0].id
+            except IndexError:
+                last_tweet_id = self.savepoint
 
             timeline = [tweet for tweet in timeline if hasattr(tweet, "retweeted_status")]
             timeline = filter(lambda tweet: tweet.text[0] != "@", timeline)
             timeline = filter(lambda tweet: not any(word in tweet.text.split() for word in self.wordBlacklist),
                               timeline)
             timeline = filter(lambda tweet: tweet.author.screen_name not in self.userBlacklist, timeline)
-            minutes_age = int(self.config.get("settings", "max_age_in_minutes"))
             timeline = filter(lambda tweet: tweet.retweeted_status.created_at >
-                                            (datetime.utcnow() - timedelta(minutes=minutes_age)), timeline)
+                                            (datetime.utcnow() - timedelta(minutes=self.max_age_in_minutes)), timeline)
 
-            logging.info("Attempting to retweet the most-retweeted tweet")
             success = False
-            err_counter = 0
             while not success:
                 for status in timeline:
                     try:
                         if self.config.get("settings", "retweeting_enabled") == "True":
                             self.api.retweet(status.id)
-                            logging.info("Retweeting tweet with id " + str(status.id) + " succeeded")
+                            logging.info("Retweeting tweet id " + str(status.id) + " succeeded")
                             success = True
                             last_tweet_id = status.id
                             break
@@ -108,15 +101,12 @@ class Bot:
                             break
                     except tweepy.error.TweepError as e:
                         logging.info("Tweepy error: " + e.reason)
-                        err_counter += 1
                         continue
-
-            logging.info("FINISHED with this batch of tweets. %d errors occurred." % err_counter)
 
             with open(self.last_id_file, "w") as file:
                 file.write(str(last_tweet_id))
 
-            logging.info("Sleeping for %d seconds between retweets" % self.sleep_time)
+            logging.info("Now time.sleep for %d seconds between retweets" % self.sleep_time)
             logging.info("------------------------------------------------------------------------------")
             time.sleep(self.sleep_time)
 
