@@ -1,8 +1,9 @@
 # twitter-news-bot
 
-Python Twitter bot that periodically retweets the most retweeted recent tweets for a search term
+This is a Twitter bot that periodically retweets the most retweeted recent tweets for a search term. It has additional
+features, such as being able to specify how many tweets you want to fetch and the maximum age for those tweets.
 
-Code inspired by : https://github.com/basti2342/retweet-bot
+The files "Bot.py" and "configuration.sample" are licensed under the MPL.
 
 ## Setup
 
