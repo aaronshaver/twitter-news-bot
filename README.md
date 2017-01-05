@@ -3,8 +3,6 @@
 This is a Twitter bot that periodically retweets the most retweeted recent tweets for a search term. It has additional
 features, such as being able to specify how many tweets you want to fetch and the maximum age for those tweets.
 
-The files "Bot.py" and "configuration.sample" are licensed under the MPL.
-
 ## Setup
 
 1. Install Python 3.x
