@@ -54,7 +54,7 @@ class Bot:
                               get("twitter", "access_token_secret"))
         self.api = tweepy.API(auth)
 
-    def execute(self):
+    def retweet(self):
         print("The Twitter retweet bot is now running. Please see the dated .log file for output.")
         while True:
             timeline_iterator = tweepy.Cursor(self.api.search, q=self.search_term, since_id=self.savepoint,
@@ -112,4 +112,4 @@ class Bot:
 
 
 bot = Bot()
-bot.execute()
+bot.retweet()
