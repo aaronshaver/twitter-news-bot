@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/aaronshaver/twitter-news-bot.svg?branch=master)](https://travis-ci.org/aaronshaver/twitter-news-bot)
+
 # twitter-news-bot
 
 This is a Twitter bot that periodically retweets the most retweeted recent tweets for a search term. It has additional
