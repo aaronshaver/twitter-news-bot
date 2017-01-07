@@ -111,7 +111,6 @@ class TwitterNewsBot:
             logging.info("------------------------------------------------------------------------------")
             time.sleep(self.sleep_time)
 
-
 if __name__ == "twitter_news_bot":
     bot = TwitterNewsBot()
     bot.retweet()
