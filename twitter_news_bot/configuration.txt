@@ -1,0 +1,18 @@
+# This is a sample configuration file
+# RENAME THIS FILE to configuration.txt to use it with the Python script
+
+[settings]
+search_query: yourSearchTerm
+# Leave field below empty to search with all languages
+tweet_language: en
+retweeting_enabled: False
+max_tweets_to_fetch: 100
+time_between_retweets: 300
+max_age_in_minutes: 60
+
+# Create your app on http://apps.twitter.com
+[twitter]
+consumer_key: your_value_here
+consumer_secret: your_value_here
+access_token: your_value_here
+access_token_secret: your_value_here
