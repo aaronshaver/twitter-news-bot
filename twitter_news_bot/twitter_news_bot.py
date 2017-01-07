@@ -13,12 +13,9 @@ from datetime import datetime, timedelta
 import tweepy
 
 
-class Bot:
+class TwitterNewsBot:
     userBlacklist = []
     wordBlacklist = []
-
-    date_time_name = datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S")
-    logging.basicConfig(filename=date_time_name + '.log', level=logging.INFO)
 
     @staticmethod
     def retrieve_save_point(last_id_file):
@@ -37,6 +34,9 @@ class Bot:
         return last_id_file
 
     def __init__(self):
+        date_time_name = datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S")
+        logging.basicConfig(filename=date_time_name + '.log', level=logging.INFO)
+
         path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
         self.config = configparser.ConfigParser()
         self.config.read(os.path.join(path, "configuration.txt"))
@@ -56,6 +56,7 @@ class Bot:
 
     def retweet(self):
         print("The Twitter retweet bot is now running. Please see the dated .log file for output.")
+
         while True:
             timeline_iterator = tweepy.Cursor(self.api.search, q=self.search_term, since_id=self.savepoint,
                                               lang=self.tweet_language, wait_on_rate_limit=True,
@@ -111,5 +112,6 @@ class Bot:
             time.sleep(self.sleep_time)
 
 
-bot = Bot()
-bot.retweet()
+if __name__ == "twitter_news_bot":
+    bot = TwitterNewsBot()
+    bot.retweet()

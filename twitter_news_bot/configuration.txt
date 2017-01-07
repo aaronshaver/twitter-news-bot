@@ -1,0 +1,15 @@
+[settings]
+search_query: Trump
+# Leave empty for all languages
+tweet_language: en
+retweeting_enabled: False
+max_tweets_to_fetch: 150
+time_between_retweets: 3000
+max_age_in_minutes: 60
+
+# Create your app on http://apps.twitter.com
+[twitter]
+consumer_key: f2waQLIPHUUolGM5Q4EqDe6EE
+consumer_secret: RaUevmeiQpCVsA9kvOH0b8t3zj5CScZritKWluuKasgeArRRKa
+access_token:4731210079-KWMf0qClImYVsZcXC8dJjEwswtH6Y7PBVNQxQTC
+access_token_secret: soYha0H7E2gCeiiMcoKDy3uGmHBiib1ksMmwomJjYdmYD
