@@ -33,8 +33,8 @@ class TwitterNewsBot:
             return ""
 
     def build_save_point(self):
-        hashedsearch_term = hashlib.md5(self.search_term.encode('utf-8')).hexdigest()
-        last_id_filename = "last_id_search_term_%s" % hashedsearch_term
+        hashed_search_query = hashlib.md5(self.search_query.encode('utf-8')).hexdigest()
+        last_id_filename = "last_id_search_query_%s" % hashed_search_query
         current_directory = os.path.dirname(os.path.abspath(__file__))
         last_id_file = os.path.join(current_directory, last_id_filename)
         return last_id_file
@@ -45,7 +45,7 @@ class TwitterNewsBot:
         self.config = configparser.ConfigParser()
         self.config.read(os.path.join(path, "configuration.txt"))
         self.sleep_time = int(self.config.get("settings", "time_between_retweets_in_seconds"))
-        self.search_term = self.config.get("settings", "search_query")
+        self.search_query = self.config.get("settings", "search_query")
         self.tweet_language = self.config.get("settings", "tweet_language")
         self.max_age_in_minutes = int(self.config.get("settings", "max_age_in_minutes"))
 
@@ -63,7 +63,7 @@ class TwitterNewsBot:
 
         while True:
             self.logger.info("Doing the actual Twitter search...")
-            timeline_iterator = tweepy.Cursor(self.api.search, q=self.search_term, since_id=self.savepoint,
+            timeline_iterator = tweepy.Cursor(self.api.search, q=self.search_query, since_id=self.savepoint,
                                               lang=self.tweet_language, wait_on_rate_limit=True,
                                               wait_on_rate_limit_notify=True). \
                 items(int(self.config.get("settings", "max_tweets_to_fetch")))
@@ -97,11 +97,12 @@ class TwitterNewsBot:
             timeline = [tweet for tweet in timeline if tweet.text[0] != "@"]  # prevents retweeting @ mention tweets
             self.logger.info("Length after filtering out @ mention tweets: " + str(len(timeline)))
 
-            for tweet in timeline:
-                self.logger.debug(tweet)
             no_older_than_this_time = datetime.utcnow() - timedelta(minutes=self.max_age_in_minutes)
             timeline = [tweet for tweet in timeline if tweet.retweeted_status.created_at > no_older_than_this_time]
             self.logger.info("Length after filtering out tweets that are older than our specified max age: " + str(len(timeline)))
+
+            timeline = [tweet for tweet in timeline if self.search_query in tweet.text]
+            self.logger.info("Length after filtering out tweets that don't contain our search query in their text: " + str(len(timeline)))
 
             num_tweets_after_filtering = len(timeline)
             self.logger.info("Final length of timeline: " + str(num_tweets_after_filtering))
