@@ -4,7 +4,7 @@ search_query: yourSearchTerm
 tweet_language: en
 retweeting_enabled: False
 max_tweets_to_fetch: 100
-time_between_retweets: 300
+time_between_retweets_in_seconds: 300
 max_age_in_minutes: 60
 
 [twitter]

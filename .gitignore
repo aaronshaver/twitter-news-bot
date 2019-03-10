@@ -101,3 +101,4 @@ ENV/
 .mypy_cache/
 
 .idea/
+last_id_search_term_*
