@@ -1,5 +1,5 @@
 configuration.txt
-last_id_search_term_*
+last_id_search_query*
 
 # Byte-compiled / optimized / DLL files
 *__pycache__*

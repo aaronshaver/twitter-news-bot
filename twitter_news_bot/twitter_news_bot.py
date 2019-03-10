@@ -84,7 +84,7 @@ class TwitterNewsBot:
             timeline.sort(key=lambda x: x.retweet_count, reverse=True)  # put most-retweeted tweets first
 
             try:
-                self.logger.info("Trying to get last tweet id by most recent in the bot's timeline")
+                self.logger.info("Trying to get id of top tweet; this is sort of a proxy for a time to not go older than -- when we search next, we'll limit the search by 'starting' with this id")
                 last_tweet_id = timeline[0].id
             except IndexError:
                 self.logger.info("There was an index error, so use the savepoint instead")
