@@ -7,7 +7,7 @@ features, such as being able to specify how many tweets you want to fetch and th
 
 1. Install Python 3.x
 2. `pip install -r requirements.txt`
-3. Edit the configuration.txt file to use your own settings (be sure to set retweeting_enabled to True when you're ready to actually retweet)
+3. Copy the sample_configuration.txt file to configuration.txt, and modify it to use your own settings. (Be sure to set retweeting_enabled to True when you're ready to actually retweet -- to avoid abusing Twitter, it's off by default!)
 4. `python twitter_news_bot/twitter_news_bot.py`
 
 Tip: if running on, e.g. an EC2 instance, make sure networking/security groups are sufficiently open for the OAuth

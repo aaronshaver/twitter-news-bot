@@ -1,3 +1,6 @@
+configuration.txt
+last_id_search_term_*
+
 # Byte-compiled / optimized / DLL files
 *__pycache__*
 *.py[cod]
@@ -101,4 +104,4 @@ ENV/
 .mypy_cache/
 
 .idea/
-last_id_search_term_*
+.vscode

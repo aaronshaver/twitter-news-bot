@@ -55,7 +55,7 @@ class TwitterNewsBot:
         self.api = tweepy.API(auth)
 
     def retweet(self):
-        print("The Twitter retweet bot is now running. Please see the dated .log file for output." + get_current_time_string())
+        print("\n\n\nThe Twitter retweet bot is now running. Please see the dated .log file for output." + get_current_time_string())
 
         while True:
             logging.info("Doing the actual Twitter search..." + get_current_time_string())
@@ -94,28 +94,29 @@ class TwitterNewsBot:
 
             logging.info("Filtering done." + get_current_time_string())
 
+            logging.info("Going through statuses in timeline..." + get_current_time_string())
             success = False
-            while not success:
-                for status in timeline:
-                    logging.info("for status in timeline..." + get_current_time_string())
-                    try:
-                        if self.config.get("settings", "retweeting_enabled") == "True":
-                            logging.info("Attempting to retweet " + str(status.id) + "..." + get_current_time_string())
-                            self.api.retweet(status.id)
-                            logging.info("Retweeting tweet id " + str(status.id) + " succeeded!" + get_current_time_string())
-                            success = True
-                            last_tweet_id = status.id
-                            break
-                        else:
-                            logging.warning("retweeting_enabled is not True, so we do nothing instead of retweet" + get_current_time_string())
-                            success = True
-                            break
-                    except tweepy.error.TweepError as e:
-                        logging.info("Tweepy error: " + e.reason + get_current_time_string())
-                        continue
+            for status in timeline:
+                try:
+                    if self.config.get("settings", "retweeting_enabled") == "True":
+                        logging.info("Attempting to retweet " + str(status.id) + "..." + get_current_time_string())
+                        self.api.retweet(status.id)
+                        logging.info("Retweeting tweet id " + str(status.id) + " succeeded!" + get_current_time_string())
+                        last_tweet_id = status.id
+                        success = True
+                        break
+                    else:
+                        logging.warning("retweeting_enabled is not True, so we do nothing instead of retweet" + get_current_time_string())
+                        break
+                except tweepy.error.TweepError as e:
+                    logging.info("Tweepy error: " + e.reason + get_current_time_string())
+                    continue
+            
+            if success == False:
+                logging.info("If retweeting continues to fail, try increasing max_tweets_to_fetch in the config file or using a different search phrase")
 
+            logging.info("Writing last id file..." + get_current_time_string())
             with open(self.last_id_file, "w") as file:
-                logging.info("writing last id file..." + get_current_time_string())
                 file.write(str(last_tweet_id))
 
             logging.info("Now sleeping for %d seconds between retweets" % self.sleep_time)
