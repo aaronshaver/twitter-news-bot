@@ -8,7 +8,7 @@ features, such as being able to specify how many tweets you want to fetch and th
 ## Setup
 
 1. Install Python 3.x
-2. pip install tweepy
+2. pip install -r requirements.txt
 3. Edit the configuration.txt file to use your own settings
 4. python twitter_news_bot
 
