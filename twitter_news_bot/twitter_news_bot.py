@@ -24,6 +24,15 @@ def setup_custom_logger(name):
     return logger
 
 class TwitterNewsBot:
+
+    def set_blocked_users(self):
+        users = self.api.blocks()
+        if len(users) > 0:
+            new_blocked_users = []
+            for user in users:
+                new_blocked_users.append(user._json['screen_name'])
+            self.blocked_users = new_blocked_users
+
     def retrieve_save_point(self):
         try:
             with open(self.last_id_file, "r") as saved_file:
@@ -41,6 +50,7 @@ class TwitterNewsBot:
 
     def __init__(self):
         self.logger = setup_custom_logger('myapp')
+        self.blocked_users = []
         path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
         self.config = configparser.ConfigParser()
         self.config.read(os.path.join(path, "configuration.txt"))
@@ -103,6 +113,10 @@ class TwitterNewsBot:
 
             timeline = [tweet for tweet in timeline if self.search_query in tweet.text]
             self.logger.info("Length after filtering out tweets that don't contain our search query in their text: " + str(len(timeline)))
+
+            self.set_blocked_users()
+            timeline = [tweet for tweet in timeline if tweet.author.screen_name not in self.blocked_users]
+            self.logger.info("Length after filtering out tweets that are from blocked users: " + str(len(timeline)))
 
             num_tweets_after_filtering = len(timeline)
             self.logger.info("Final length of timeline: " + str(num_tweets_after_filtering))
