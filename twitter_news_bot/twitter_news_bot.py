@@ -121,7 +121,8 @@ class TwitterNewsBot:
                                 stop_trying_to_retweet = True
                                 break
                             except tweepy.error.TweepError as e:
-                                self.logger.info("Tweepy error: " + e.reason)
+                                self.logger.warning("Tweepy error: " + e.reason)
+                                self.logger.info("Continuing to next-most-retweeted tweet...")
                                 continue
                             except:
                                 self.logger.error("Unexpected error: ", sys.exc_info()[0])
