@@ -20,7 +20,7 @@ https://developer.twitter.com/en/docs/basics/authentication/guides/access-tokens
 
 ### Tips
 
-Be careful with searching for large numbers of tweets (max_tweets_to_fetch), like 5000. You'll get rate limited. Tweepy will respect Twitter's rate limiting, but it's still a pain to deal with.
+Be careful with searching for large numbers of tweets (max_tweets_to_fetch). It seems to start rate limiting at around 1,000 tweets. It's not a big deal, because Tweepy will respect Twitter's rate limiting, but it's still a pain and something to keep in mind.
 
 ### Commands to run in EC2
 
