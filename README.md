@@ -1,5 +1,7 @@
 # twitter-news-bot
 
+## Description
+
 This is a Twitter bot that periodically retweets the most retweeted recent tweets for a search term. It has additional
 features, such as being able to specify how many tweets you want to fetch and the maximum age for those tweets.
 
@@ -9,7 +11,7 @@ One interesting side effect of it being automated is that it has no bias in what
 
 One thing this project made me realize is that sentiment analysis and natural language processing is HARD. If you _did_ want to only show, say, only positive tweets about Trump, it turns out to be harder than you'd think. For example, if your query phrase was "I love Trump", many of the tweets would be positive. But you'd also have tweets that has text like "No one ever said 'I love Trump' without being paid off."
 
-## Setup
+## Setup and Usage
 
 1. Install Python 3.x
 2. `pip install -r requirements.txt`
@@ -20,15 +22,15 @@ Tip: if running on, e.g. an EC2 instance, make sure networking/security groups a
 call to be made. Opening up 80, 443, and 22 should be sufficient without exposing overly much but you may want to restrict it even further. Next, run the script with `sudo nohup python twitter_news_bot.py &` to keep it running even when you close
 your SSH client. You can then `ps aux` (maybe with ` | grep py`) to see the running process, and `sudo kill <pid>` to kill it.
 
-### Twitter access tokens
+### Twitter Access Tokens
 
 https://developer.twitter.com/en/apps
 
-### Tips
+### Twitter API Tip
 
 Be careful with searching for large numbers of tweets (max_tweets_to_fetch). It seems to start rate limiting at around 1,000 tweets. It's not a big deal, because Tweepy will respect Twitter's rate limiting, but it's still a pain and something to keep in mind.
 
-### Commands to run in EC2
+### Commands to Run the Bot in EC2
 
 * `sudo yum update`
 * `sudo yum install python3`
