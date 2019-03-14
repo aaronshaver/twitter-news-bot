@@ -22,7 +22,7 @@ your SSH client. You can then `ps aux` (maybe with ` | grep py`) to see the runn
 
 ### Twitter access tokens
 
-https://developer.twitter.com/en/docs/basics/authentication/guides/access-tokens.html
+https://developer.twitter.com/en/apps
 
 ### Tips
 

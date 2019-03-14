@@ -19,7 +19,7 @@ def setup_custom_logger(name):
     handler = logging.FileHandler(date_time_name + '.log', mode='w')
     handler.setFormatter(formatter)
     logger = logging.getLogger(name)
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.INFO)
     logger.addHandler(handler)
     return logger
 
@@ -32,6 +32,7 @@ class TwitterNewsBot:
             for user in users:
                 new_blocked_users.append(user._json['screen_name'])
             self.blocked_users = new_blocked_users
+        self.logger.debug("Blocked users: " + str(self.blocked_users))
 
     def retrieve_save_point(self):
         try:
@@ -91,7 +92,7 @@ class TwitterNewsBot:
             self.logger.info("Total tweets found: " + str(len(timeline)))
 
             self.logger.info("Sorting tweets by highest retweet count...")
-            timeline.sort(key=lambda x: x.retweet_count, reverse=True)  # put most-retweeted tweets first
+            timeline.sort(key=lambda tweet: tweet.retweet_count, reverse=True)  # put most-retweeted tweets first
 
             try:
                 self.logger.info("Trying to get id of top tweet; this is sort of a proxy for a time to not go older than -- when we search next, we'll limit the search by 'starting' with this id")
@@ -115,7 +116,7 @@ class TwitterNewsBot:
             self.logger.info("Length after filtering out tweets that don't contain our search query in their text: " + str(len(timeline)))
 
             self.set_blocked_users()
-            timeline = [tweet for tweet in timeline if tweet.author.screen_name not in self.blocked_users]
+            timeline = [tweet for tweet in timeline if tweet.retweeted_status.user.screen_name not in self.blocked_users]
             self.logger.info("Length after filtering out tweets that are from blocked users: " + str(len(timeline)))
 
             num_tweets_after_filtering = len(timeline)
