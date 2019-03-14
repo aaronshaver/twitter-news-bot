@@ -2,8 +2,12 @@
 
 ## Description
 
-This is a Twitter bot that periodically retweets the most retweeted recent tweets for a search term. It has additional
-features, such as being able to specify how many tweets you want to fetch and the maximum age for those tweets.
+This is a Twitter bot that periodically retweets the most retweeted tweets for a search term. It has additional
+features, such as:
+
+* Being able to specify how many tweets you want to fetch/consider
+* Specifying the maximum age of tweets under consideration
+* It won't retweet tweets that are from users you have blocked
 
 Originally I wrote this bot in early 2017 when Trump had taken office as a way to keep on top of news about Trump. Running the bot, especially with a "max age" time window of an hour and tweeting every hour, made for a timely snapshot of whatever was the most important breaking news or commentary in that hour. In the old days, you could pay someone to pull stories from newspapers and magazines on a topic and present that collection to you. This is the automated version of that.
 
