@@ -17,8 +17,7 @@ One thing this project made me realize is that sentiment analysis and natural la
 4. `python twitter_news_bot.py` (this may need to be `python3` on some systems)
 
 Tip: if running on, e.g. an EC2 instance, make sure networking/security groups are sufficiently open for the OAuth
-call to be made. Opening up 80, 443, and 22 should be sufficient without exposing overly much but you may want to restrict it even further. Next, run the script with `sudo nohup python twitter_news_bot.py &` to keep it running even when you close
-your SSH client. You can then `ps aux` (maybe with ` | grep py`) to see the running process, and `sudo kill <pid>` to kill it.
+call to be made. Opening up 80, 443, and 22 should be sufficient without exposing overly much but you may want to restrict it even further.
 
 ### Twitter access tokens
 
@@ -30,11 +29,22 @@ Be careful with searching for large numbers of tweets (max_tweets_to_fetch). It 
 
 ### Commands to run in EC2
 
+(I used `Amazon Linux 2 AMI (HVM), SSD Volume Type - ami-0de53d8956e8dcf80 (64-bit x86)` as the image for the EC2 instance.)
+
+Intall and start the bot:
+
 * `sudo yum update`
-* `sudo yum install python3`
+* `sudo yum -y install python3`
 * `sudo yum -y install git`
 * `git clone https://github.com/aaronshaver/twitter-news-bot.git`
 * `curl -O https://bootstrap.pypa.io/get-pip.py`
 * `python3 get-pip.py --user`
 * `pip install tweepy --user`
-* `nohup python3 twitter_news_bot/twitter_news_bot.py &`
+* `cd twitter-news-bot`
+* `nohup python3 twitter_news_bot.py &` (hit enter after this command to get back to the prompt)
+
+Stop the bot:
+
+* `ps aux | pgrep -f news_bot | xargs kill`
+
+You may want to do `rm last_id_search_query_*` as well if you want the bot to search as wide in time as possible on the next run
