@@ -9,11 +9,11 @@ features, such as:
 * Specifying the maximum age of tweets under consideration
 * It won't retweet tweets that are from users you have blocked
 
-Originally I wrote this bot in early 2017 when Trump had taken office as a way to keep on top of news about Trump. Running the bot, especially with a "max age" time window of an hour and tweeting every hour, made for a timely snapshot of whatever was the most important breaking news or commentary in that hour. In the old days, you could pay someone to pull stories from newspapers and magazines on a topic and present that collection to you. This is the automated version of that.
+Originally I wrote this bot in early 2017 as a way to keep on top of news. Running the bot, especially with a "max age" time window of an hour and tweeting every hour, made for a timely snapshot of whatever was the most important breaking news or commentary in that hour. In the old days, you could pay someone to pull stories from newspapers and magazines on a topic and present that collection to you. This is the automated version of that.
 
-One interesting side effect of it being automated is that it has no bias in what it presents to you. If there was a positive story about Trump, it would be presented as long as it had enough retweets even though, at the time, as continues to be the case two years later, most coverage is negative (because Trump is a fucking idiot).
+One interesting side effect of it being automated is that it has no bias in what it presents to you. If there was a positive story, it would be presented as long as it had enough retweets.
 
-One thing this project made me realize is that sentiment analysis and natural language processing is HARD. If you _did_ want to only show, say, only positive tweets about Trump, it turns out to be harder than you'd think. For example, if your query phrase was "I love Trump", many of the tweets would be positive. But you'd also have tweets that has text like "No one ever said 'I love Trump' without being paid off."
+One thing this project made me realize is that sentiment analysis and natural language processing is HARD. If you _did_ want to only show, say, only positive tweets about something, it turns out to be harder than you'd think. For example, if your query phrase was "I love turnips", many of the tweets would be positive. But you'd also have tweets that has text like "No one ever said 'I love turnips' without being paid off."
 
 ## Setup and Usage
 
